@@ -6,7 +6,7 @@ const count = document.getElementById('count');
 const total = document.getElementById('total');
 const movieSelect = document.getElementById('movie');
 
-const ticketPrice = +movieSelect.value;
+let ticketPrice = +movieSelect.value;
 //need this value to be turned into a number, from a string.  Could parseInt, or use + sign.
 
 //console.log(typeof ticketPrice)
@@ -15,18 +15,33 @@ const ticketPrice = +movieSelect.value;
 //Intent: update total and count
 function updateSelectedCount() {
     const selectedSeats = document.querySelectorAll('.row .seat.selected');
+    
+    //to store the "cart of seats", copy selected seats into an array, map through, and return a new array of indexes.. using spread operator. [...]
+    //(basically saving the changing nodelist(as seats are clicked) into an array, then map through it... map returns something after a loop, whereas forEach just loops through...
+    
+    const seatsIndex = [...selectedSeats].map((seat) => [...seats].indexOf(seat));
+
+    localStorage.setItem('selectedSeats', JSON.stringify(seatsIndex));
+
+
     const selectedSeatsCount = selectedSeats.length;
 
     count.innerText = selectedSeatsCount;
     total.innerText = selectedSeatsCount * ticketPrice;
-    console.log(count.innerText);
-
 }
 //Notes
 //selectedSeats puts all of seats into a nodelist upon selecting them occupied.
 
+
+//Movie Select Event.. to change the price of the tickets selected by changing the movie.
+movieSelect.addEventListener('change', e => {
+    ticketPrice = +e.target.value;
+    updateSelectedCount();
+});
+
+
 //Intent: When we click on a seat, we want to change the class to select it, to turn it blue/occupied.
-container.addEventListener('click', (e) => {
+container.addEventListener('click', e => {
     if (e.target.classList.contains('seat') &&
     !e.target.classList.contains('occupied')
     ) {
